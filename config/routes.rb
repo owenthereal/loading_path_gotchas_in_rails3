@@ -1,4 +1,7 @@
 AutoloadInRails3::Application.routes.draw do
+  match 'class1' => 'subdirectory_naming_convention#class1'
+  match 'class2' => 'subdirectory_naming_convention#class2'
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
