@@ -26,23 +26,21 @@ This second example have everything the same as the first one except that the su
 
 The result indicates either a (strange) directory naming convention in Rails 3 or a potential bug in its path inferring algorithm. Here are the [lines][1] in Rails 3 that does the auto-loading:
 
-{% highlight ruby %}
-# Load the constant named +const_name+ which is missing from +from_mod+. If
-# it is not possible to load the constant into from_mod, try its parent module
-# using const_missing.
-def load_missing_constant(from_mod, const_name)
-  ...
+	# Load the constant named +const_name+ which is missing from +from_mod+. If
+	# it is not possible to load the constant into from_mod, try its parent module
+	# using const_missing.
+	def load_missing_constant(from_mod, const_name)
+	  ...
 
-  file_path = search_for_file(path_suffix)
+	  file_path = search_for_file(path_suffix)
 
-  if file_path && ! loaded.include?(File.expand_path(file_path)) # We found a matching file to load
-    require_or_load file_path
-    raise LoadError, "Expected #{file_path} to define #{qualified_name}" unless local_const_defined?(from_mod, const_name)
-    return from_mod.const_get(const_name)
-  elsif 
-	...
-end
-{% endhighlight %}
+	  if file_path && ! loaded.include?(File.expand_path(file_path)) # We found a matching file to load
+	    require_or_load file_path
+	    raise LoadError, "Expected #{file_path} to define #{qualified_name}" unless local_const_defined?(from_mod, const_name)
+	    return from_mod.const_get(const_name)
+	  elsif 
+		...
+	end
 
 Please note that if class caching is turned on, both cases work. Now everything becomes quite clear, the line with "unless" after the "raise" is causing the problem: when class caching is turned off, "local_const_defined?" always returns false hence raising the "LoadError". I have created a [bug report][3] on this issue and I will post replies here once I got anything :).
 
